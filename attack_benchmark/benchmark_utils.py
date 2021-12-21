@@ -1,9 +1,9 @@
 import os
 import sys
-sys.path.append(os.path.join('/data/chenhai-fwxz/code/ares_ch/pytorch_ares'))
+
 import torch
 import torchvision
-from attack_torch.utils import multiple_mini_batch_attack
+from pytorch_ares.attack_torch.utils import multiple_mini_batch_attack
 
 
 def get_benchmark_sys_info():

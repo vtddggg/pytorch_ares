@@ -1,12 +1,10 @@
 import torch
 import timm
 device = 'cuda:2' if torch.cuda.is_available() else 'cpu'
-import sys
 import os
-sys.path.append(os.path.join('/data/chenhai-fwxz/pytorch_ares'))
 import numpy as np
-from attack_torch import *
-from dataset_torch.datasets_test import datasets
+from pytorch_ares.attack_torch import *
+from pytorch_ares.dataset_torch.datasets_test import datasets
 from utils import get_resnet18_clntrained, get_simpledla_clntrained, get_googlenet_clntrained, get_resnet50_clntrained, \
     get_resnet34_clntrained, get_xception41_clntrained, get_inception_resnet_v2_clntrained, get_inception_v4_clntrained, \
         get_inception_v3_clntrained
@@ -25,10 +23,23 @@ imagenet_inception_resnet_v2 = get_inception_resnet_v2_clntrained().to(device)
 imagenet_inception_v4 = get_inception_v4_clntrained().to(device)
 imagenet_inception_v3 = get_inception_v3_clntrained().to(device)
 os.chdir('..')
+
 parser = argparse.ArgumentParser()
+
+# required args
+parser.add_argument('--data_dir', type=str, required=True, default='', help='test image dir')
+
+# basic args
+parser.add_argument('--batch_size', type=int, default=5, help='batch size for attack')
+
+# data preprocess args
+parser.add_argument('--crop_pct', type=float, default=0.875, help='Input image center crop percent')
+parser.add_argument('--input_size', type=int, default=224, help='Input image size')
+parser.add_argument('--interpolation', type=str, default='bilinear', choices=['bilinear', 'bicubic'], help='')
+
 parser.add_argument('--norm', default=np.inf, help='You can choose np.inf and 2(l2)', choices=['np.inf', '2'])
 parser.add_argument('--mode', default='white-box attack', help= 'mode for this model', choices= ['white-box attack', 'black-box attack'])
-parser.add_argument('--dataset_name', default='cifar10', help= 'Dataset for this model', choices= ['cifar10', 'imagenet'])
+parser.add_argument('--dataset_name', default='imagenet', help= 'Dataset for this model', choices= ['cifar10', 'imagenet'])
 parser.add_argument('--attack_name', default='fgsm', help= 'attack methods for this model', choices= ['fgsm', 'bim', 'pgd','mim','si_ni_fgsm','vmi_fgsm','sgm', 'dim', 'tim', 'deepfool', 'cw'])
 parser.add_argument('--source_model', default= cifar10_resnet18, help= 'The first three models are used for imagenet, the last three models are used for cifar10.', 
                     choices= ["cifar10_resnet18", 'cifar10_simpledla', 'cifar10_googlenet','imagenet_resnet50','imagenet_resnet34','imagenet_xception41','imagenet_inception_resnet_v2',
@@ -126,11 +137,6 @@ else:
 
 print('Loading dataset...')
 test_loader = datasets(args.dataset_name, args.mode)
-
-# lst_setting = [
-#     (net, test_loader),
-# ]
-
 
 info = get_benchmark_sys_info()
 if args.dataset_name == "imagenet":

@@ -1,8 +1,6 @@
 import numpy as np
 import os
-os.environ['TORCH_HOME']='/data/chenhai-fwxz/pytorch_ares/attack_benchmark'
-import sys
-sys.path.append(os.path.join('/data/chenhai-fwxz/pytorch_ares/'))
+
 from torchvision.utils import save_image
 import torch
 from utils import get_resnet18_clntrained, get_simpledla_clntrained, get_googlenet_clntrained, get_resnet50_clntrained, \
